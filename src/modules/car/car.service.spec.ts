@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CarService } from './car.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { car, prismaMock, updateCar } from '../../mock/prisma.mock';
+import { car, carsReturn, prismaMock, updateCar } from '../../mock/prisma.mock';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 jest.mock('../../prisma/prisma.service');
@@ -138,5 +138,13 @@ describe('CarService', () => {
         message: 'car not found'
       }));
     }
+  });
+
+  it('find All', async () => {
+    expect(await service.findAll()).toEqual([car]);
+  });
+
+  it('find All pagination', async () => {
+    expect(await service.findAll({page: 1, limit: 1 })).toEqual(carsReturn);
   });
 });

@@ -28,22 +28,20 @@ export class CarService {
     if (pagination) {
       const { page, limit } = pagination;
 
-      const response = await this.prismaService.$transaction([
-        this.prismaService.car.count(),
-        this.prismaService.car.findMany({
+      const count = await this.prismaService.car.count();
+      const car = await  this.prismaService.car.findMany({
           skip: (page - 1) * limit,
           take: limit,
           orderBy: {
             createdAt: 'desc',
           },
-        })
-      ]);
+        });
 
       return paginateResponse<Car>({
         page,
         limit,
-        total: response[0],
-        result: response[1],
+        total: count,
+        result: car,
       });
     }
     return this.prismaService.car.findMany({});
