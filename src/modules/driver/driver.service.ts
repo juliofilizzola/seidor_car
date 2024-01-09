@@ -5,6 +5,8 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { PaginationParams } from '../../utils/paginations/type';
 import { paginateResponse } from '../../utils/paginations/pagination';
 import { Driver } from '@prisma/client';
+import { formatDocument } from '../../utils/format/format-document';
+import { validDocument } from '../../utils/validation/valid-document';
 
 @Injectable()
 export class DriverService {
@@ -19,6 +21,15 @@ export class DriverService {
         message: 'Driver already exist',
       });
     }
+    const document = validDocument(createDriverDto.document);
+
+    if (!document) {
+      throw new BadRequestException({
+        message: 'Invalid document',
+      });
+    }
+
+    createDriverDto.document = formatDocument(createDriverDto.document);
 
     return this.prismaService.driver.create({
       data: createDriverDto,
@@ -82,6 +93,16 @@ export class DriverService {
           message: 'Driver already exist',
         });
       }
+    }
+    if (updateDriverDto?.document) {
+      const document = validDocument(updateDriverDto?.document);
+
+      if (!document) {
+        throw new BadRequestException({
+          message: 'Invalid document',
+        });
+      }
+      updateDriverDto.document = formatDocument(updateDriverDto?.document);
     }
 
     return this.prismaService.driver.update({
