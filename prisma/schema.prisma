@@ -19,3 +19,16 @@ model Car {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
+
+model Driver {
+  id        String    @id @default(uuid())
+  name      String
+  document  String
+  license   String
+  phone     String?
+  email     String    @unique
+  driving   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}

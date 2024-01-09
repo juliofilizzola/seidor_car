@@ -20,7 +20,7 @@ describe('paginateResponse', () => {
       currentPage: 1,
       nextPage: 2,
       prevPage: null,
-      lastPage: 2,
+      totalList: 2,
     });
   });
 

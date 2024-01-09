@@ -27,7 +27,6 @@ describe('validDocument', () => {
 
   it('returns false for a document with non-numeric characters', () => {
     const invalidDocument = 'ABC13.456-789';
-    console.log(invalidDocument.length);
     const isValid = validDocument(invalidDocument);
     expect(isValid).toBe(false);
   });
