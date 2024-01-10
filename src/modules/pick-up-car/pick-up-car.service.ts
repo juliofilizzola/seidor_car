@@ -130,11 +130,17 @@ export class PickUpCarService {
   async findAll(pagination?: PaginationParams, query?: QuerySearchPickUpCarDto) {
     const baseSearch: Prisma.PickUpCarWhereInput  = {
       car: {
-        brand: query?.brand,
-        color: query?.color,
+        brand: {
+          contains: query?.brand,
+        },
+        color: {
+          contains: query?.color,
+        }
       },
       driver: {
-        name: query?.name,
+        name: {
+          contains: query?.name
+        }
       }
     };
 
