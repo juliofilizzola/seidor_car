@@ -5,10 +5,13 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma/
-COPY .env.example .env
 
 RUN yarn
 
+RUN touch .env
+
 COPY . .
+
+COPY .env.example .env
 
 CMD ["yarn", "run", "start:dev"]

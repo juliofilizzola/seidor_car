@@ -39,13 +39,8 @@ export class PickUpCarService {
       });
     }
 
-    if (createPickUpCarDto.initPicKUp > createPickUpCarDto.endPickUp) {
-      throw new BadRequestException({
-        message: 'initPickUp must be less than endPickUp'
-      });
-    }
 
-    if(createPickUpCarDto.initPicKUp < new Date() || createPickUpCarDto.endPickUp < new Date()) {
+    if(createPickUpCarDto.initPicKUp < new Date()) {
       throw new BadRequestException({
         message: 'initPickUp or endPickUp must be greater than current date'
       });
@@ -76,7 +71,6 @@ export class PickUpCarService {
             id: createPickUpCarDto.idCar,
           }
         },
-        endPickUp: createPickUpCarDto.endPickUp,
         initPickUp: createPickUpCarDto.initPicKUp,
         driver: {
           connect: {
@@ -103,6 +97,7 @@ export class PickUpCarService {
       },
       data: {
         deliveryDescription:  updatePickUpCarDto.deliveryDescription,
+        endPickUp: new Date(),
         returnedCar: true,
         car: {
           update: {

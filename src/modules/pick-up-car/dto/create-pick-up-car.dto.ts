@@ -25,13 +25,6 @@ export class CreatePickUpCarDto {
   @IsDate()
   initPicKUp: Date;
 
-  @IsNotEmpty({
-    message: 'end pick up is required'
-  })
-  @Type(() => Date)
-  @IsDate()
-  endPickUp: Date;
-
   @IsString({
     message: 'id car is invalid'
   })
