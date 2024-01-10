@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { DriverService } from './driver.service';
 import { CreateDriverDto } from './dto/create-driver.dto';
 import { UpdateDriverDto } from './dto/update-driver.dto';
+import { PaginationParams } from '../../utils/paginations/type';
 
 @Controller('driver')
 export class DriverController {
@@ -13,13 +14,26 @@ export class DriverController {
   }
 
   @Get()
-  findAll() {
-    return this.driverService.findAll();
+  findAll(@Query() { page, limit }: PaginationParams, @Query() query: { name: string }) {
+    const pagination: PaginationParams =
+      page && limit ? { page: Number(page), limit: Number(limit) } : undefined;
+
+    return this.driverService.findAll(pagination, query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.driverService.findOne(id);
+  }
+
+  @Get('by-email/:email')
+  findByEmail(@Param('email') email: string) {
+    return this.driverService.findByEmail(email);
+  }
+
+  @Get('in-driver/: id')
+  inDriver(@Param('id') id: string) {
+    return this.driverService.inDriver(id);
   }
 
   @Patch(':id')

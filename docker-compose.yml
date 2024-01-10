@@ -43,7 +43,7 @@ services:
 
 volumes:
   seidor-car-app:
-    name: seidor-valume
+    name: seidor-app
   pgadmin:
     name: pgadmin
   postgres:

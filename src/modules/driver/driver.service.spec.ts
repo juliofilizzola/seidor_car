@@ -4,6 +4,9 @@ import { driver, driverReturn, prismaMock, updateDriver } from '../../mock/prism
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
+jest.mock('../../prisma/prisma.service');
+
+
 describe('DriverService', () => {
   let service: DriverService;
   let prismaService: PrismaService;

@@ -4,7 +4,9 @@ import { UpdateDriverDto } from './dto/update-driver.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaginationParams } from '../../utils/paginations/type';
 import { paginateResponse } from '../../utils/paginations/pagination';
-import { Driver } from '@prisma/client';
+import { Driver, Prisma } from '@prisma/client';
+import { formatDocument } from '../../utils/format/format-document';
+import { validDocument } from '../../utils/validation/valid-document';
 
 @Injectable()
 export class DriverService {
@@ -19,19 +21,35 @@ export class DriverService {
         message: 'Driver already exist',
       });
     }
+    const document = validDocument(createDriverDto.document);
+
+    if (!document) {
+      throw new BadRequestException({
+        message: 'Invalid document',
+      });
+    }
+
+    createDriverDto.document = formatDocument(createDriverDto.document);
 
     return this.prismaService.driver.create({
       data: createDriverDto,
     });
   }
 
-  async findAll(pagination?: PaginationParams) {
+  async findAll(pagination?: PaginationParams, query?: { name: string }) {
+    const baseSearch: Prisma.DriverWhereInput = {
+      name: query?.name
+    };
+
     if (pagination) {
       const { page, limit } = pagination;
       const offset = (page - 1) * limit;
 
-      const count = await this.prismaService.driver.count();
+      const count = await this.prismaService.driver.count({
+        where: baseSearch
+      });
       const drivers = await this.prismaService.driver.findMany({
+        where: baseSearch,
         skip: offset,
         take: limit,
         orderBy: {
@@ -47,7 +65,9 @@ export class DriverService {
       });
     }
 
-    return this.prismaService.driver.findMany({});
+    return this.prismaService.driver.findMany({
+      where: baseSearch
+    });
   }
 
   async findOne(id: string) {
@@ -83,10 +103,31 @@ export class DriverService {
         });
       }
     }
+    if (updateDriverDto?.document) {
+      const document = validDocument(updateDriverDto?.document);
+
+      if (!document) {
+        throw new BadRequestException({
+          message: 'Invalid document',
+        });
+      }
+      updateDriverDto.document = formatDocument(updateDriverDto?.document);
+    }
 
     return this.prismaService.driver.update({
       where: {id},
       data: updateDriverDto,
+    });
+  }
+
+  async inDriver(id: string) {
+    return this.prismaService.driver.findFirst({
+      where: {
+        id,
+      },
+      select: {
+        driving: true
+      }
     });
   }
 

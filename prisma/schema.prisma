@@ -11,24 +11,43 @@ datasource db {
 }
 
 model Car {
-  id        String    @id @default(uuid())
+  id        String      @id @default(uuid())
   color     String
   plate     String
   brand     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  inUse     Boolean     @default(false)
+  pickUpCar PickUpCar[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   deletedAt DateTime?
 }
 
 model Driver {
-  id        String    @id @default(uuid())
+  id        String      @id @default(uuid())
   name      String
   document  String
   license   String
   phone     String?
-  email     String    @unique
-  driving   Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  email     String      @unique
+  pickUpCar PickUpCar[]
+  driving   Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   deletedAt DateTime?
+}
+
+model PickUpCar {
+  id                  String    @id @default(uuid())
+  car                 Car       @relation(fields: [carId], references: [id], onDelete: Cascade)
+  carId               String
+  driver              Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  driverId            String
+  initPickUp          DateTime
+  endPickUp           DateTime
+  deliveryDescription String?
+  returnedCar         Boolean   @default(false)
+  description         String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
 }

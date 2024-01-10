@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CarService } from './car.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
+import { PaginationParams } from '../../utils/paginations/type';
 
 @Controller('car')
 export class CarController {
@@ -13,10 +14,19 @@ export class CarController {
   }
 
   @Get()
-  findAll() {
-    return this.carService.findAll();
+  findAll(@Query() { page, limit }: PaginationParams, @Query() query: { color: string, brand: string }) {
+    const pagination: PaginationParams =
+      page && limit ? { page: Number(page), limit: Number(limit) } : undefined;
+    return this.carService.findAll(pagination, query);
   }
-
+  @Get('in-use/:id')
+  findInUse(@Param('id') id: string) {
+    return this.carService.inUse(id);
+  }
+  @Get('find-by-plate/:plate')
+  findByPlate(@Param('plate') plate: string) {
+    return this.carService.findCarByPlate(plate);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.carService.findOne(id);

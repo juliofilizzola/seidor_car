@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CarService } from './car.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { car, carsReturn, prismaMock, updateCar } from '../../mock/prisma.mock';
+import { carMock, carsReturn, prismaMock, updateCarMock } from '../../mock/prisma.mock';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 jest.mock('../../prisma/prisma.service');
@@ -57,12 +57,12 @@ describe('CarService', () => {
   });
 
   it('find Car by plate', async () => {
-    expect(await service.findCarByPlate(car.plate)).toEqual(car);
+    expect(await service.findCarByPlate(carMock.plate)).toEqual(carMock);
   });
 
 
   it('find Car by id', async () => {
-    expect(await service.findCarByPlate(car.id)).toEqual(car);
+    expect(await service.findCarByPlate(carMock.id)).toEqual(carMock);
   });
 
 
@@ -75,26 +75,26 @@ describe('CarService', () => {
 
   it('find Car by id error', async () => {
     jest.spyOn(prismaService.car, 'findFirst').mockResolvedValue(null);
-    expect(await service.findCarByPlate(car.id)).toEqual(null);
+    expect(await service.findCarByPlate(carMock.id)).toEqual(null);
   });
 
   it('create new Car', async () => {
     jest.spyOn(prismaService.car, 'findFirst').mockResolvedValue(null);
     expect(await service.create({
-      plate: car.plate,
-      brand: car.brand,
-      color: car.color,
-    })).toEqual(car);
+      plate: carMock.plate,
+      brand: carMock.brand,
+      color: carMock.color,
+    })).toEqual(carMock);
   });
 
   it('create new Car Error Already exist', async () => {
-    jest.spyOn(prismaService.car, 'findFirst').mockResolvedValue(car);
+    jest.spyOn(prismaService.car, 'findFirst').mockResolvedValue(carMock);
 
     try {
       await service.create({
-        plate: car.plate,
-        brand: car.brand,
-        color: car.color,
+        plate: carMock.plate,
+        brand: carMock.brand,
+        color: carMock.color,
       });
     } catch (e) {
 
@@ -105,16 +105,16 @@ describe('CarService', () => {
   });
 
   it('update Car', async () => {
-    expect(await service.update(car.id, {
+    expect(await service.update(carMock.id, {
       color: 'prata'
-    })).toEqual(updateCar);
+    })).toEqual(updateCarMock);
   });
 
   it('update car error, car not found', async () => {
     try {
       jest.spyOn(prismaService.car, 'findFirst').mockResolvedValue(null);
 
-      await service.update(car.id, {
+      await service.update(carMock.id, {
         color: 'prata'
       });
     } catch (e) {
@@ -125,14 +125,14 @@ describe('CarService', () => {
   });
 
   it('remove Car', async () => {
-    expect(await service.remove(car.id)).toEqual(car);
+    expect(await service.remove(carMock.id)).toEqual(carMock);
   });
 
   it('remove car error, car not found', async () => {
     try {
       jest.spyOn(prismaService.car, 'findFirst').mockResolvedValue(null);
 
-      await service.remove(car.id);
+      await service.remove(carMock.id);
     } catch (e) {
       expect(e).toEqual(new NotFoundException({
         message: 'car not found'
@@ -141,7 +141,7 @@ describe('CarService', () => {
   });
 
   it('find All', async () => {
-    expect(await service.findAll()).toEqual([car]);
+    expect(await service.findAll()).toEqual([carMock]);
   });
 
   it('find All pagination', async () => {
