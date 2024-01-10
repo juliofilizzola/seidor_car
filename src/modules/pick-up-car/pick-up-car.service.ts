@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePickUpCarDto } from './dto/create-pick-up-car.dto';
-import { UpdatePickUpCarDto } from './dto/update-pick-up-car.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { DriverService } from '../driver/driver.service';
 import { CarService } from '../car/car.service';
@@ -154,14 +153,13 @@ export class PickUpCarService {
     });
   }
 
-  async update(id: string, updatePickUpCarDto: UpdatePickUpCarDto) {
+  async update(id: string, updatePickUpCarDto: { description?: string; endPickUp?: Date }) {
     const pickUpCar = await this.findOne(id);
     if (!pickUpCar) {
       throw new NotFoundException({
         message: 'PickUpCar not found'
       });
     }
-
 
     return this.prismaService.pickUpCar.update({
       where: {

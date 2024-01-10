@@ -4,7 +4,7 @@ import { UpdateCarDto } from './dto/update-car.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaginationParams } from '../../utils/paginations/type';
 import { paginateResponse } from '../../utils/paginations/pagination';
-import { Car } from '@prisma/client';
+import { Car, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CarService {
@@ -24,12 +24,31 @@ export class CarService {
     });
   }
 
-  async findAll(pagination?: PaginationParams) {
+  async inUse(id: string) {
+    return this.prismaService.car.findFirst({
+      where: {
+        id,
+      },
+      select: {
+        inUse: true,
+      }
+    });
+  }
+
+  async findAll(pagination?: PaginationParams, query?: { color: string, brand: string}) {
+    const baseSearch: Prisma.CarWhereInput = {
+      color: query?.color,
+      brand: query?.brand,
+    };
+
     if (pagination) {
       const { page, limit } = pagination;
 
-      const count = await this.prismaService.car.count();
+      const count = await this.prismaService.car.count({
+        where: baseSearch,
+      });
       const car = await  this.prismaService.car.findMany({
+          where: baseSearch,
           skip: (page - 1) * limit,
           take: limit,
           orderBy: {
@@ -44,7 +63,9 @@ export class CarService {
         result: car,
       });
     }
-    return this.prismaService.car.findMany({});
+    return this.prismaService.car.findMany({
+      where: baseSearch,
+    });
   }
 
   async findCarByPlate(plate: string) {
