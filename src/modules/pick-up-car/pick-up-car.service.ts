@@ -39,6 +39,35 @@ export class PickUpCarService {
       });
     }
 
+    if (createPickUpCarDto.initPicKUp > createPickUpCarDto.endPickUp) {
+      throw new BadRequestException({
+        message: 'initPickUp must be less than endPickUp'
+      });
+    }
+
+    if(createPickUpCarDto.initPicKUp < new Date() || createPickUpCarDto.endPickUp < new Date()) {
+      throw new BadRequestException({
+        message: 'initPickUp or endPickUp must be greater than current date'
+      });
+    }
+
+    await this.prismaService.car.update({
+      where: {
+        id: createPickUpCarDto.idCar,
+      }, data: {
+        inUse: true,
+      }
+    });
+
+    await this.prismaService.driver.update({
+      where: {
+        id: createPickUpCarDto.idDriver,
+      },
+      data: {
+        driving: true,
+      }
+    });
+
     return this.prismaService.pickUpCar.create({
       data: {
         description: createPickUpCarDto.description,
@@ -52,7 +81,7 @@ export class PickUpCarService {
         driver: {
           connect: {
             id: createPickUpCarDto.idDriver,
-          }
+          },
         }
       },
     });
@@ -149,6 +178,10 @@ export class PickUpCarService {
     return this.prismaService.pickUpCar.findFirst({
       where: {
         id,
+      },
+      include: {
+        car: true,
+        driver: true,
       }
     });
   }

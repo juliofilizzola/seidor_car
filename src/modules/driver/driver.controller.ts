@@ -14,11 +14,11 @@ export class DriverController {
   }
 
   @Get()
-  findAll(@Query() { page, limit }: PaginationParams, @Query() query: { name: string }) {
+  findAll(@Query() { page, limit, name }: PaginationParams & { name: string }) {
     const pagination: PaginationParams =
       page && limit ? { page: Number(page), limit: Number(limit) } : undefined;
 
-    return this.driverService.findAll(pagination, query);
+    return this.driverService.findAll(pagination, { name });
   }
 
   @Get(':id')
@@ -31,7 +31,7 @@ export class DriverController {
     return this.driverService.findByEmail(email);
   }
 
-  @Get('in-driver/: id')
+  @Get('in-driver/:id')
   inDriver(@Param('id') id: string) {
     return this.driverService.inDriver(id);
   }

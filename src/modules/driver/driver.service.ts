@@ -38,7 +38,9 @@ export class DriverService {
 
   async findAll(pagination?: PaginationParams, query?: { name: string }) {
     const baseSearch: Prisma.DriverWhereInput = {
-      name: query?.name
+      name: {
+        contains: query?.name,
+      }
     };
 
     if (pagination) {
