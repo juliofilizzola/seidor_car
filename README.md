@@ -21,8 +21,8 @@ Este é um projeto base utilizando o NestJS como framework para desenvolvimento 
 
 Para executar o projeto, basta rodar o docker compose:
 
-Para facilitar, o Docker está se baseando no arquivo .env.exemple para executar,
-caso alguma das porta utilizada de erro, basta alterar no .env.exemple e no docker-compose.yml
+Antes, copie o arquivo .env.example e renomei ele para .env.
+Caso alguma das porta utilizada de erro, basta alterar no .env e no docker-compose.yml
 
 ```bash
   docker compose up -d
@@ -64,7 +64,7 @@ Para o cadastro do veículo, todos os campos do body são obrigatórios.
     }
     ````
 ## Rotas
-
+Aqui tem as principais rotas do sistema.
 O projeto está rodando na porta ``http://localhost:3000``
 
 ``Criar Carro``
@@ -211,3 +211,30 @@ curl --location 'http://localhost:3000/pick-up-car' \
 }'
 ````
 ---
+
+``Entregar o carro``
+
+Rota Put
+
+``http://localhost:3000/pick-up-car/returned/a365e0b3-65f4-4f30-be28-e60397165735``
+
+body: (Não é obrigatorio)
+````json
+{
+    "deliveryDescription": "Carro sem dano"
+}
+````
+
+````bash
+curl --location --request PUT 'http://localhost:3000/pick-up-car/returned/a365e0b3-65f4-4f30-be28-e60397165735' \
+--data ''
+````
+Ou
+
+````bash
+curl --location --request PUT 'http://localhost:3000/pick-up-car/returned/a365e0b3-65f4-4f30-be28-e60397165735' \
+--header 'Content-Type: application/json' \
+--data '{
+    "deliveryDescription": "Carro sem dano"
+}'
+````
