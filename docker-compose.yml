@@ -46,6 +46,6 @@ volumes:
   seidor-car-app:
     name: seidor-app
   pgadmin:
-    name: pgadmin
+    name: pgadmin-db
   postgres:
     name: seidor-db

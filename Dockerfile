@@ -8,10 +8,6 @@ COPY prisma ./prisma/
 
 RUN yarn
 
-RUN touch .env
-
 COPY . .
-
-COPY .env.example .env
 
 CMD ["yarn", "run", "start:dev"]
