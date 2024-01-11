@@ -14,10 +14,10 @@ export class CarController {
   }
 
   @Get()
-  findAll(@Query() { page, limit }: PaginationParams, @Query() query: { color: string, brand: string }) {
+  findAll(@Query() { page, limit, color, brand }: PaginationParams & { color: string, brand: string }) {
     const pagination: PaginationParams =
       page && limit ? { page: Number(page), limit: Number(limit) } : undefined;
-    return this.carService.findAll(pagination, query);
+    return this.carService.findAll(pagination, { color, brand });
   }
   @Get('in-use/:id')
   findInUse(@Param('id') id: string) {

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { PickUpCarService } from './pick-up-car.service';
 import { CreatePickUpCarDto } from './dto/create-pick-up-car.dto';
 import { UpdatePickUpCarDto } from './dto/update-pick-up-car.dto';
@@ -15,16 +15,16 @@ export class PickUpCarController {
     return this.pickUpCarService.create(createPickUpCarDto);
   }
 
-  @Patch('returned/:id')
+  @Put('returned/:id')
   returned(@Body() updatePickUpCarDto: ReturnedCarPickUpCarDto, @Param('id') id: string) {
     return this.pickUpCarService.returnedCar(id, updatePickUpCarDto);
   }
   @Get()
-  findAll(@Query() { page, limit }: PaginationParams, @Query() query: QuerySearchPickUpCarDto) {
+  findAll(@Query() { page, limit, name, color, brand }: PaginationParams & QuerySearchPickUpCarDto) {
     const pagination: PaginationParams =
       page && limit ? { page: Number(page), limit: Number(limit) } : undefined;
 
-    return this.pickUpCarService.findAll(pagination, query);
+    return this.pickUpCarService.findAll(pagination, { name, color, brand });
   }
 
   @Get(':id')

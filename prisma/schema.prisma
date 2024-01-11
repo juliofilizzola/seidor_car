@@ -43,7 +43,7 @@ model PickUpCar {
   driver              Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
   driverId            String
   initPickUp          DateTime
-  endPickUp           DateTime
+  endPickUp           DateTime?
   deliveryDescription String?
   returnedCar         Boolean   @default(false)
   description         String

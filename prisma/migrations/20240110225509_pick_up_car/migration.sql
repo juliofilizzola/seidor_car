@@ -7,7 +7,7 @@ CREATE TABLE "PickUpCar" (
     "carId" TEXT NOT NULL,
     "driverId" TEXT NOT NULL,
     "initPickUp" TIMESTAMP(3) NOT NULL,
-    "endPickUp" TIMESTAMP(3) NOT NULL,
+    "endPickUp" TIMESTAMP(3),
     "deliveryDescription" TEXT,
     "returnedCar" BOOLEAN NOT NULL DEFAULT false,
     "description" TEXT NOT NULL,

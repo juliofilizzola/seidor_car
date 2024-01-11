@@ -20,6 +20,7 @@ services:
     image: postgres:9-alpine
     restart: always
     tty: true
+
     ports:
       - 5432:5432
     volumes:
@@ -45,6 +46,6 @@ volumes:
   seidor-car-app:
     name: seidor-app
   pgadmin:
-    name: pgadmin
+    name: pgadmin-db
   postgres:
     name: seidor-db

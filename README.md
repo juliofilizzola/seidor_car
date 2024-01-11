@@ -1,73 +1,240 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Seidor Car
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Projeto de teste técnico para Seidor. Esse é um sistema Web que permite controlar a utilização
+de automóveis de uma empresa, para isso foi criado um registro para carros, motorista e também as requisições de veículos
 
-## Description
+## Requisitos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Este é um projeto base utilizando o NestJS como framework para desenvolvimento de servidores em Node.js, o Prisma para ORM (Object-Relational Mapping) e o Docker para facilitar a gestão do ambiente de desenvolvimento.
 
-## Installation
+- Docker
+- Node ^18
+- Nestjs
+- Prisma ORM
+- Class Validator
+- Class Transformer
+- Eslint
+- Jest
+
+##  Executar
+
+Para executar o projeto, basta rodar o docker compose:
+
+Antes, copie o arquivo .env.example e renomei ele para .env.
+Caso alguma das porta utilizada de erro, basta alterar no .env e no docker-compose.yml
 
 ```bash
-$ yarn install
+  docker compose up -d
 ```
 
-## Running the app
+em seguida execute o codigo para fazer o deploy do banco de dados dentro do docker
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+  docker exec -ti seidor-car-api sh
 ```
+e
+```bash
+  yarn prisma generate | yarn prisma migrate deploy
+```
+## Regras de negocio
 
-## Test
+Para esse projeto tomei a liberdade de adicionar algumas regras de negócio:
+
+- Carros:
+  A placa do veículo deve ser única no sistema, ao qual verifica se existe quando cadastrar e atualizar, gerando uma exceção caso já exista
+Para o cadastro do veículo, todos os campos do body são obrigatórios.
+  ````json
+    {
+      "brand": "Ford",
+      "color": "green",
+      "plate": "ABC-132A"
+    }
+  ````
+
+ - Motorista:
+    O email de cadastro é único, ao qual se verifica se existe quando cadastrar e atualizar, gerando uma exceção caso já exista.
+    ````json
+    {
+      "name":  "Fulano de tal",
+      "document":  "00000000000",
+      "license":   "ABC-1234",
+      "email":   "test@com.com",
+      "phone" : "31999999999"
+    }
+    ````
+## Rotas
+Aqui tem as principais rotas do sistema.
+O projeto está rodando na porta ``http://localhost:3000``
+
+``Criar Carro``
+Rota Post
+
+``http://localhost:3000/car``
+body:
+````json
+{
+    "brand": "Ford",
+    "color": "green",
+    "plate": "ABC-132A"
+}
+````
+````bash
+curl --location 'http://localhost:3000/car' \
+--header 'Content-Type: application/json' \
+--data '{
+    "brand": "Ford",
+    "color": "green",
+    "plate": "ABC-132A"
+}'
+````
+---
+``Buscar Carro``
+
+Rota Get
+
+``http://localhost:3000/car``
+Variações dessa rota:
+```
+-Paginado
+'http://localhost:3000/car?limit=10&page=1'
+
+-Busca por Cor
+http://localhost:3000/car?limit=10&page=1&color=blue
+
+-Busca por Marca
+
+http://localhost:3000/car?limit=10&page=1&color=blue&Bland=Ford
+
+```
+````bash
+curl --location 'http://localhost:3000/car?limit=10&page=1&color=blue&brand=Ford'
+````
+---
+
+``Buscar Carro por Id``
+
+Rota Get
+
+``http://localhost:3000/car/cf789bf2-42f7-499d-a8da-fe9fe55a8772``
+
+```bash curl --location 'http://localhost:3000/car/cf789bf2-42f7-499d-a8da-fe9fe55a8772'```
+
+---
+``Criar motorista``
+Rota Post:
+
+``http://localhost:3000/driver``
+
+Body:
+````json
+{
+  "name":  "Fulano de tal",
+  "document":  "00000000000",
+  "license":   "ABC-1234",
+  "email":   "test@com.com",
+  "phone" : "31999999999"
+}
+
+````
 
 ```bash
-# unit tests
-$ yarn run test
+ curl --location 'http://localhost:3000/driver' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "name":  "Fulano de tal",
+  "document":  "00000000000",
+  "license":   "ABC-1234",
+  "email":   "test@com.com",
+  "phone" : "31999999999"
+}'
+ ```
+---
 
-# e2e tests
-$ yarn run test:e2e
+``Buscar Motorista``
+Rota Get
 
-# test coverage
-$ yarn run test:cov
+``http://localhost:3000/driver``
+
+Variações dessa rota:
 ```
+-Paginado
+'http://localhost:3000/driver?limit=10&page=1'
 
-## Support
+-Busca por nome
+http://localhost:3000/driver?limit=10&page=1&name=Fulano
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+```
+````bash
+curl --location 'http://localhost:3000/driver?limit=10&page=1&name=Fulano'
+````
+---
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+``Buscar Por Id``
 
-## License
+Rota get
 
-Nest is [MIT licensed](LICENSE).
+``http://localhost:3000/driver/cf789bf2-42f7-499d-a8da-fe9fe55a8772``
+
+```bash curl --location 'http://localhost:3000/driver/cf789bf2-42f7-499d-a8da-fe9fe55a8772'```
+
+---
+
+``Solicitação de carro``
+
+``Criar Solicitação``
+
+Rota Post
+
+``http://localhost:3000/pick-up-car``
+
+Body:
+````json
+{
+    "idCar": "f259bfff-4b00-42b5-a52c-331480084eaa",
+    "idDriver": "3a158048-8442-40d5-8f1d-e5a3a0382af4",
+    "description": "levando o chefe para o trabalho",
+    "initPicKUp": "2024-01-10T13:51:38.423"
+}
+````
+
+````bash
+curl --location 'http://localhost:3000/pick-up-car' \
+--header 'Content-Type: application/json' \
+--data '{
+    "idCar": "f259bfff-4b00-42b5-a52c-331480084eaa",
+    "idDriver": "3a158048-8442-40d5-8f1d-e5a3a0382af4",
+    "description": "levando o chefe",
+    "initPicKUp": "2024-01-10T13:51:38.423",
+    "endPickUp": "2024-01-13T13:51:38.423"
+}'
+````
+---
+
+``Entregar o carro``
+
+Rota Put
+
+``http://localhost:3000/pick-up-car/returned/a365e0b3-65f4-4f30-be28-e60397165735``
+
+body: (Não é obrigatorio)
+````json
+{
+    "deliveryDescription": "Carro sem dano"
+}
+````
+
+````bash
+curl --location --request PUT 'http://localhost:3000/pick-up-car/returned/a365e0b3-65f4-4f30-be28-e60397165735' \
+--data ''
+````
+Ou
+
+````bash
+curl --location --request PUT 'http://localhost:3000/pick-up-car/returned/a365e0b3-65f4-4f30-be28-e60397165735' \
+--header 'Content-Type: application/json' \
+--data '{
+    "deliveryDescription": "Carro sem dano"
+}'
+````

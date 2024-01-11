@@ -39,6 +39,30 @@ export class PickUpCarService {
       });
     }
 
+
+    if(createPickUpCarDto.initPicKUp < new Date()) {
+      throw new BadRequestException({
+        message: 'initPickUp or endPickUp must be greater than current date'
+      });
+    }
+
+    await this.prismaService.car.update({
+      where: {
+        id: createPickUpCarDto.idCar,
+      }, data: {
+        inUse: true,
+      }
+    });
+
+    await this.prismaService.driver.update({
+      where: {
+        id: createPickUpCarDto.idDriver,
+      },
+      data: {
+        driving: true,
+      }
+    });
+
     return this.prismaService.pickUpCar.create({
       data: {
         description: createPickUpCarDto.description,
@@ -47,12 +71,11 @@ export class PickUpCarService {
             id: createPickUpCarDto.idCar,
           }
         },
-        endPickUp: createPickUpCarDto.endPickUp,
         initPickUp: createPickUpCarDto.initPicKUp,
         driver: {
           connect: {
             id: createPickUpCarDto.idDriver,
-          }
+          },
         }
       },
     });
@@ -74,6 +97,7 @@ export class PickUpCarService {
       },
       data: {
         deliveryDescription:  updatePickUpCarDto.deliveryDescription,
+        endPickUp: new Date(),
         returnedCar: true,
         car: {
           update: {
@@ -101,11 +125,17 @@ export class PickUpCarService {
   async findAll(pagination?: PaginationParams, query?: QuerySearchPickUpCarDto) {
     const baseSearch: Prisma.PickUpCarWhereInput  = {
       car: {
-        brand: query?.brand,
-        color: query?.color,
+        brand: {
+          contains: query?.brand,
+        },
+        color: {
+          contains: query?.color,
+        }
       },
       driver: {
-        name: query?.name,
+        name: {
+          contains: query?.name
+        }
       }
     };
 
@@ -149,6 +179,10 @@ export class PickUpCarService {
     return this.prismaService.pickUpCar.findFirst({
       where: {
         id,
+      },
+      include: {
+        car: true,
+        driver: true,
       }
     });
   }

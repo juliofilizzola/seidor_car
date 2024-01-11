@@ -37,7 +37,9 @@ export class CarService {
 
   async findAll(pagination?: PaginationParams, query?: { color: string, brand: string}) {
     const baseSearch: Prisma.CarWhereInput = {
-      color: query?.color,
+      color: {
+        contains: query?.color
+      },
       brand: query?.brand,
     };
 
@@ -86,10 +88,20 @@ export class CarService {
 
   async update(id: string, updateCarDto: UpdateCarDto) {
     const car = await this.findOne(id);
+
     if(!car) {
       throw new NotFoundException({
         message: 'car not found'
       });
+    }
+
+    if (updateCarDto?.plate) {
+      const carAlreadyExists = await this.findCarByPlate(updateCarDto.plate);
+      if (carAlreadyExists) {
+        throw new BadRequestException({
+          message: 'car already exists'
+        });
+      }
     }
 
     return this.prismaService.car.update({
